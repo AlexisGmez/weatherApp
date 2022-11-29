@@ -87,3 +87,27 @@ h1{
     50%{ top: 0;}
     100% { top: 1rem; }
   }
+
+
+  @media(min-width: 642px){
+
+    .header{
+        max-width: 30%;
+        max-height: 300px;
+        gap: 0;
+        padding: 1.5rem 1rem;
+        
+
+    }
+    .img__container{
+        height: 40%;
+       
+    }
+    .img__container img{
+        height: 100%;
+    }
+    .weather__conditions{
+        max-width: 30%;
+        padding: 1rem;
+    }
+}

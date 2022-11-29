@@ -1,59 +1,54 @@
+import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { convert } from '../helpers/TransformTemp';
 import { useAxios } from '../hooks/useAxios';
+import Swal from 'sweetalert2';
+import Card from './Card';
 
 import './css/Header.css';
 const Header = () => {
   
   const [temp,setTemp] = useState();
   const [isCelsius,setIsCelsuis]= useState(true);  
+  const [data, setData] =useState();
+  const getData = useAxios();
   
-  const data = useAxios();
-  
+
+  useEffect(()=>{
+      setData(getData);
+  },[getData])
+
   useEffect(()=>{
     data && setTemp(convert(data.main.temp));
   },[data])
 
   const handleButton =()=>setIsCelsuis(!isCelsius);
 
-  data && console.log(data)
+  const getApi =async(country)=>{
+
+    const API__KEY = '381978573d8a3f4b42ecd58b2ba90de7';   
+    const URL =`https://api.openweathermap.org/data/2.5/weather?q=${country}&appid=${API__KEY}`;
+    try {
+        const petition = await axios.get(URL);
+        setData(petition.data)
+        
+    } catch (error) {
+      Swal.fire(`No se encontro la ciudad ${country}`);
+        
+    }
+  }
+
 
 
   return (
+    <Card 
+      data={data} 
+      isCelsius={isCelsius} 
+      temp={ temp } 
+      handleButton={handleButton} 
+      getApi={getApi}
+    />
     
-    !data
-    ? <h1 className='header'>Loading</h1>
-    :
-    <>
-        <header className='header'>
-            <input type="text" placeholder='type a city' />  
-            <div className="img__container">
-                <img src={`http://openweathermap.org/img/wn/${data.weather[0].icon}@4x.png`} alt="" />
-            </div>
-            <div className="city">
-                <h1>{`${data.name}, ${data.sys.country}`}</h1>
-            </div>
-            <div className="temperature">
-                <p className="temperature__p">
-                    {
-                        isCelsius?
-                        `${temp?.celsius}°`
-                        :`${temp?.fahrenheigt}° F`
-                    }
-                </p>
-                <button className='button__change' onClick={ handleButton }>grades/Celsius</button>
-            </div>   
-        </header>
-        <section className="weather__conditions">
-            <p>{ data.weather[0].description }</p>
-            <p>Speed wind: { data.wind.speed } m/s</p>
-            <p>Cloud: { data.clouds.all }%</p>
-            <p>Pressure: { data.main.pressure }</p>
-        </section>
-    
-    </>
-    
-
   )
 }
 
